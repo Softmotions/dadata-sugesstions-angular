@@ -1,0 +1,12 @@
+{
+  "name": "dadata-sugesstions-angular",
+  "description": "Angular module for DaData suggestions",
+  "version": "0.0.1",
+  "homepage": "https://github.com/Softmotions/dadata-suggestions-angular",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "angular": "~1.5.0",
+    "jquery": "2.2.x"
+  }
+}
