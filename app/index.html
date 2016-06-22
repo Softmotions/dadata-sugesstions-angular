@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <title>DaData angular module</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.suggestions/16.5.3/css/suggestions.css" type="text/css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/jquery.suggestions/16.5.3/css/suggestions.css"
+          type="text/css"/>
 
     <script src="bower_components/jquery/dist/jquery.js"></script>
     <script src="bower_components/angular/angular.js"></script>
@@ -13,13 +14,22 @@
     <script src="app.js"></script>
 </head>
 <body ng-app="myApp" ng-controller="myAppController">
+<div>Гранулярные подсказки</div>
 <form dadata dadata-type="address">
     <label for="city" class="required">Город</label>
     <input id="city" class="form-control input-lg" ng-model="city" dadata-input dadata-bounds="city">
     <label for="street" class="required">Улица</label>
-    <input id="street" class="form-control input-lg" ng-model="street" dadata-input dadata-bounds="street" dadata-constraint-input-id="city">
+    <input id="street" class="form-control input-lg" ng-model="street" dadata-input dadata-bounds="street"
+           dadata-constraint-input-id="city">
     <label for="house" class="required">Дом</label>
-    <input id="house" class="form-control input-lg" ng-model="house" dadata-input dadata-bounds="house" dadata-constraint-input-id="street" dadata-fixdata="true">
+    <input id="house" class="form-control input-lg" ng-model="house" dadata-input dadata-bounds="house"
+           dadata-constraint-input-id="street" dadata-fixdata="true">
+</form>
+<p>
+<div>Адрес целиком</div>
+<form dadata dadata-type="address">
+    <label for="address" class="required">Адрес</label>
+    <input id="address" class="form-control input-lg" ng-model="address" dadata-input>
 </form>
 </body>
 </html>

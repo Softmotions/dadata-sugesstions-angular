@@ -5,6 +5,7 @@ angular.module('myApp', ['dadataSuggestions'])
         $scope.city = "Новосибирск";
         $scope.street = "Пирогова";
         $scope.house = "11";
+        $scope.address = "г Новосибирск, ул Пирогова, д 11";
     })
     .run(['dadataConfig', function(dadataConfig) {
         dadataConfig.token = '<API-KEY>';

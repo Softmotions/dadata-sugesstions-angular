@@ -78,7 +78,7 @@ angular.module('dadataSuggestions', [])
                         bounds: scope.bounds || '',
                         constraints: (scope.constraintInputId) ? $('#' + scope.constraintInputId) : '',
                         formatSelected: function (suggestion) {
-                            if (scope.bounds.search(/^\w+$/) != -1) { // dadataBounds can contain range of attributes
+                            if (scope.bounds && (scope.bounds.search(/^\w+$/) != -1)) { // dadataBounds can contain range of attributes
                                 return eval('suggestion.data.' + scope.bounds); // bounds contain only one attribute - return value of selected attribute
                             }
                             return suggestion.value;
@@ -96,6 +96,14 @@ angular.module('dadataSuggestions', [])
                             angular.forEach(parentCtrl.inputs, function (input) {
                                 $("#" + input.id).suggestions().disable();
                             });
+                        }
+
+                        var inputsLength = 0;
+                        angular.forEach(parentCtrl.inputs, function () {
+                            inputsLength++;
+                        });
+                        if (inputsLength == 1) {
+                            parentCtrl.inputs[iAttrs['ngModel']].fixdata = true; // auto-enable fixData on non-granular suggestions
                         }
                     });
 
