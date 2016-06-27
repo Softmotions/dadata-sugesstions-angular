@@ -9,4 +9,5 @@ angular.module('myApp', ['dadataSuggestions'])
     })
     .run(['dadataConfig', function(dadataConfig) {
         dadataConfig.token = '<API-KEY>';
+        dadataConfig.timeout = 3000;
     }]);

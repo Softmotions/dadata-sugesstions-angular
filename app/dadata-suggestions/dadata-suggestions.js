@@ -1,7 +1,7 @@
 /*!
  * dadata-suggestions-angular
  * https://github.com/Softmotions/dadata-suggestions-angular
- * Version: 0.0.1 - 2016-06-22T11:12:44.000Z
+ * Version: 0.0.1 - 2016-06-27T12:20:00.000Z
  * License: MIT
  */
 
@@ -15,26 +15,31 @@
  *             <input id="city" ng-model="city" dadata-input dadata-bounds="city" dadata-constraint-input-id="region" dadata-fixdata="true">
  *         </form>
  *
- *  type - тип подсказок, см. https://confluence.hflabs.ru/display/SGTDOC165/API
- *  trigger-select-on-[blur|enter|space] - автовыбор первой подсказки по событию.
- *      в примере указаны значения по-умолчанию.
- *  bounds - гранулярные подсказки http://codepen.io/dadata/pen/cGkah?editors=101
- *      ограничение на аттрибут для поиска, например city - поиск только городов.
- *      можно указать диапазон city-settlement - поиск по городу и населенному пункту.
- *      если указано только одно значение, то в поле ввода попадает только этот аттрибут,
- *      в противном случае - сырое значение возвращенное сервисом
- *  constraint-input-id - id поля ввода, значение которого должно учитываться для поиска.
- *      например, для поля ввода город нужно указать поле ввода региона
- *  fixdata == true - для последнего поля в цепочке гранулярных подсказок.
- *      необходимо, если в момент подключения подсказок в форме уже есть данные.
+ *  Обязательные параметры:
+ *      dadata: type - тип подсказок, см. https://confluence.hflabs.ru/display/SGTDOC165/API
+ *      dadata-input: id, ng-model
+ *  Настройки:
+ *      trigger-select-on-[blur|enter|space] - автовыбор первой подсказки по событию.
+ *          в примере указаны значения по-умолчанию.
+ *      bounds - гранулярные подсказки http://codepen.io/dadata/pen/cGkah?editors=101
+ *          ограничение на аттрибут для поиска, например city - поиск только городов.
+ *          можно указать диапазон city-settlement - поиск по городу и населенному пункту.
+ *          если указано только одно значение, то в поле ввода попадает только этот аттрибут,
+ *          в противном случае - сырое значение возвращенное сервисом
+ *      constraint-input-id - id поля ввода, значение которого должно учитываться для поиска.
+ *          например, для поля ввода город нужно указать поле ввода региона
+ *      fixdata == true - для последнего поля в цепочке гранулярных подсказок.
+ *          необходимо, если в момент подключения подсказок в форме уже есть данные.
+ *          автоматически добавляется для единственного поля.
  */
 'use strict';
 
 angular.module('dadataSuggestions', [])
     .value('dadataConfig', {
-        token: false
+        token: false,
+        timeout: 3000
     })
-    .directive('dadata', function () {
+    .directive('dadata', ['$timeout', function ($timeout) {
         return {
             restrict: 'A',
             scope: {
@@ -50,9 +55,44 @@ angular.module('dadataSuggestions', [])
                 };
                 this.inputs = $scope.inputs;
                 this.type = $scope.type;
-            }]
+
+                // set default values
+                this.triggerSelectOnBlur = $scope.triggerSelectOnBlur || true;
+                this.triggerSelectOnEnter = $scope.triggerSelectOnEnter || true;
+                this.triggerSelectOnSpace = $scope.triggerSelectOnSpace || false;
+            }],
+            link: function (scope) {
+                $timeout(function () {
+                    // auto-enable fixData on non-granular suggestions
+                    var inputsLength = 0;
+                    angular.forEach(scope.inputs, function () {
+                        inputsLength++;
+                    });
+                    if (inputsLength == 1) {
+                        angular.forEach(scope.inputs, function (input) {
+                            input.fixdata = true;
+                        });
+                    }
+
+                    // check for empty form
+                    var isEmpty = true;
+                    angular.forEach(scope.inputs, function (input) {
+                        if (input.ngModel) {
+                            isEmpty = false;
+                        }
+                        input.prevValue = input.ngModel;
+                    });
+                    angular.forEach(scope.inputs, function (input) {
+                        if (isEmpty) { // form is empty - disable fixData
+                            input.fixdata = false;
+                        } else { // form is not empty - disable suggestions util user try to modify values
+                            $("#" + input.id).suggestions().disable();
+                        }
+                    });
+                });
+            }
         };
-    })
+    }])
     .directive('dadataInput', ['dadataConfig', '$timeout', function (dadataConfig, $timeout) {
         return {
             restrict: 'A',
@@ -62,19 +102,21 @@ angular.module('dadataSuggestions', [])
                 id: '@',
                 bounds: '@dadataBounds',
                 constraintInputId: '@dadataConstraintInputId',
-                fixdata: '@dadataFixdata'
+                fixdata: '@dadataFixdata',
+                prevValue: '@'
             },
             link: function (scope, iElement, iAttrs, parentCtrl) {
-                // require defined token
-                if (dadataConfig.token) {
+                // require defined token, type, ng-model and id
+                if (dadataConfig.token && iAttrs['ngModel'] && iAttrs['id'] && parentCtrl.type) {
                     parentCtrl.addInput(iAttrs['ngModel'], scope);
                     iElement.suggestions({
                         serviceUrl: "https://suggestions.dadata.ru/suggestions/api/4_1/rs",
                         token: dadataConfig.token,
                         type: parentCtrl.type.toUpperCase(),
-                        triggerSelectOnBlur: parentCtrl.triggerSelectOnBlur || true,
-                        triggerSelectOnEnter: parentCtrl.triggerSelectOnEnter || true,
-                        triggerSelectOnSpace: parentCtrl.triggerSelectOnSpace || false,
+                        timeout: dadataConfig.timeout,
+                        triggerSelectOnBlur: parentCtrl.triggerSelectOnBlur,
+                        triggerSelectOnEnter: parentCtrl.triggerSelectOnEnter,
+                        triggerSelectOnSpace: parentCtrl.triggerSelectOnSpace,
                         bounds: scope.bounds || '',
                         constraints: (scope.constraintInputId) ? $('#' + scope.constraintInputId) : '',
                         formatSelected: function (suggestion) {
@@ -85,39 +127,7 @@ angular.module('dadataSuggestions', [])
                         }
                     });
 
-                    $timeout(function () {
-                        var isEmpty = true;
-                        angular.forEach(parentCtrl.inputs, function (input) {
-                            if (input.ngModel) {
-                                isEmpty = false;
-                            }
-                        });
-                        if (!isEmpty) { // form is not empty - disable suggestions util user try to modify values
-                            angular.forEach(parentCtrl.inputs, function (input) {
-                                $("#" + input.id).suggestions().disable();
-                            });
-                        }
-
-                        var inputsLength = 0;
-                        angular.forEach(parentCtrl.inputs, function () {
-                            inputsLength++;
-                        });
-                        if (inputsLength == 1) {
-                            parentCtrl.inputs[iAttrs['ngModel']].fixdata = true; // auto-enable fixData on non-granular suggestions
-                        }
-                    });
-
-                    iElement.bind('suggestions-clear', function (event) { // update model after jquery
-                        var ngModelToClear = event.target.attributes['ng-model'].value;
-                        parentCtrl.inputs[ngModelToClear].ngModel = '';
-                    });
-
-                    iElement.bind('suggestions-select', function (event) { // update model after jquery
-                        var ngModelToSelect = event.target.attributes['ng-model'].value;
-                        parentCtrl.inputs[ngModelToSelect].ngModel = event.target.value;
-                    });
-
-                    iElement.bind('suggestions-set', function (event) { // update model after jquery
+                    iElement.bind('suggestions-clear suggestions-select suggestions-set', function (event) { // update model after jquery
                         var ngModelToSet = event.target.attributes['ng-model'].value;
                         parentCtrl.inputs[ngModelToSet].ngModel = event.target.value;
                     });
@@ -130,13 +140,30 @@ angular.module('dadataSuggestions', [])
                         });
                     });
 
-                    iElement.bind('keyup', function () { // user try to modify values - we can check values in DaData
-                        angular.forEach(parentCtrl.inputs, function (input) {
-                            if (input.fixdata) {
-                                $('#' + input.id).suggestions().fixData(); // run fixData on first try
-                                input.fixdata = false;
+                    iElement.bind('keyup paste', function (event) { // user try to modify values - we can check values in DaData
+                        function runFixData() {
+                            angular.forEach(parentCtrl.inputs, function (input) {
+                                if (input.fixdata) {
+                                    $('#' + input.id).suggestions().fixData(); // run fixData on first try
+                                    input.fixdata = false;
+                                }
+                            });
+                        }
+
+                        var ngModelToCheck = event.target.attributes['ng-model'].value;
+                        var input = parentCtrl.inputs[ngModelToCheck];
+
+                        if (event.type == 'paste') { // run fixData after paste complete
+                            $timeout(function () {
+                                input.prevValue = input.ngModel;
+                                runFixData();
+                            });
+                        } else {
+                            if (input.prevValue != input.ngModel) { // run fixData on input value change
+                                input.prevValue = input.ngModel;
+                                runFixData();
                             }
-                        });
+                        }
                     });
                 }
             }
