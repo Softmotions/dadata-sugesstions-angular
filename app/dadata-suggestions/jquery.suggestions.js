@@ -1,5 +1,5 @@
 /**
- * DaData.ru Suggestions jQuery plugin, version 16.5.3
+ * DaData.ru Suggestions jQuery plugin, version 16.5.4
  *
  * DaData.ru Suggestions jQuery plugin is freely distributable under the terms of MIT-style license
  * Built on DevBridge Autocomplete for jQuery (https://github.com/devbridge/jQuery-Autocomplete)
@@ -177,7 +177,7 @@
             getWords: function (str, stopwords) {
                 // Split numbers and letters written together
                 str = str.replace(/(\d+)([а-яА-ЯёЁ]{2,})/g, '$1 $2')
-                .replace(/([а-яА-ЯёЁ]+)(\d+)/g, '$1 $2');
+                    .replace(/([а-яА-ЯёЁ]+)(\d+)/g, '$1 $2');
 
                 var words = this.compact(str.split(wordSplitter)),
                     lastWord = words.pop(),
@@ -387,8 +387,7 @@
                     if (fieldsStopwords) {
                         $.each(fieldsStopwords, function (field, stopwords) {
                             var fieldValue = utils.getDeepValue(suggestions[0], field),
-                                fieldWords = fieldValue && utils.withSubTokens(
-                                        utils.getWords(fieldValue.toLowerCase(), stopwords));
+                                fieldWords = fieldValue && utils.withSubTokens(utils.getWords(fieldValue.toLowerCase(), stopwords));
 
                             if (fieldWords && fieldWords.length) {
                                 suggestionWords = suggestionWords.concat(fieldWords);
@@ -448,7 +447,7 @@
 
             return fieldValue &&
                 new RegExp('^' + utils.escapeRegExChars(fieldValue) + '([' + wordDelimiters + ']|$)', 'i')
-                .test(suggestion.value);
+                    .test(suggestion.value);
         }
 
         function chooseFormattedField(formattedMain, formattedAlt) {
@@ -559,28 +558,23 @@
             formatResult: function (value, currentValue, suggestion, options) {
                 var that = this,
                     formattedInn = that.type.formatResultInn.call(that, suggestion, currentValue),
-                    formatterOGRN = that.highlightMatches(utils.getDeepValue(suggestion.data, 'ogrn'), currentValue,
-                        suggestion),
+                    formatterOGRN = that.highlightMatches(utils.getDeepValue(suggestion.data, 'ogrn'), currentValue, suggestion),
                     formattedInnOGRN = chooseFormattedField(formattedInn, formatterOGRN),
-                    formattedFIO = that.highlightMatches(utils.getDeepValue(suggestion.data, 'management.name'),
-                        currentValue, suggestion),
+                    formattedFIO = that.highlightMatches(utils.getDeepValue(suggestion.data, 'management.name'), currentValue, suggestion),
                     address = utils.getDeepValue(suggestion.data, 'address.value') || '';
 
                 if (that.isMobile) {
                     (options || (options = {})).maxLength = 50;
                 }
 
-                value = formattedField.call(that, value, utils.getDeepValue(suggestion.data, 'name.latin'),
-                    currentValue, suggestion, options);
+                value = formattedField.call(that, value, utils.getDeepValue(suggestion.data, 'name.latin'), currentValue, suggestion, options);
                 value = that.wrapFormattedValue(value, suggestion);
 
                 if (address) {
                     address = address.replace(/^(\d{6}?\s+|Россия,\s+)/i, '');
                     if (that.isMobile) {
                         // keep only two first words
-                        address = address.replace(
-                            new RegExp('^([^' + wordDelimiters + ']+[' + wordDelimiters + ']+[^' + wordDelimiters + ']+).*'),
-                            '$1');
+                        address = address.replace(new RegExp('^([^' + wordDelimiters + ']+[' + wordDelimiters + ']+[^' + wordDelimiters + ']+).*'), '$1');
                     } else {
                         address = that.highlightMatches(address, currentValue, suggestion, {
                             unformattableTokens: ADDRESS_STOPWORDS
@@ -642,8 +636,7 @@
             matchers: [matchers.matchByWords],
             formatResult: function (value, currentValue, suggestion, options) {
                 var that = this,
-                    formattedBIC = that.highlightMatches(utils.getDeepValue(suggestion.data, 'bic'), currentValue,
-                        suggestion),
+                    formattedBIC = that.highlightMatches(utils.getDeepValue(suggestion.data, 'bic'), currentValue, suggestion),
                     address = utils.getDeepValue(suggestion.data, 'address.value') || '';
 
                 value = that.highlightMatches(value, currentValue, suggestion, options);
@@ -653,9 +646,7 @@
                     address = address.replace(/^\d{6}( РОССИЯ)?, /i, '');
                     if (that.isMobile) {
                         // keep only two first words
-                        address = address.replace(
-                            new RegExp('^([^' + wordDelimiters + ']+[' + wordDelimiters + ']+[^' + wordDelimiters + ']+).*'),
-                            '$1');
+                        address = address.replace(new RegExp('^([^' + wordDelimiters + ']+[' + wordDelimiters + ']+[^' + wordDelimiters + ']+).*'), '$1');
                     } else {
                         address = that.highlightMatches(address, currentValue, suggestion, {
                             unformattableTokens: ADDRESS_STOPWORDS
@@ -790,7 +781,7 @@
 
     Suggestions.defaultOptions = defaultOptions;
 
-    Suggestions.version = '16.5.3';
+    Suggestions.version = '16.5.4';
 
     $.Suggestions = Suggestions;
 
@@ -848,7 +839,7 @@
             that.initializer.reject();
             that.notify('dispose');
             that.el.removeData(dataAttrKey)
-            .removeClass('suggestions-input');
+                .removeClass('suggestions-input');
             that.unbindWindowEvents();
             that.removeWrapper();
             that.el.trigger('suggestions-dispose');
@@ -906,8 +897,8 @@
                 utils.delay(function () {
                     $(document).one("mousedown", function (e) {
                         var $elements = that.el
-                        .add(that.$wrapper)
-                        .add(that.options.$helpers);
+                            .add(that.$wrapper)
+                            .add(that.options.$helpers);
 
                         if (that.options.floating) {
                             $elements = $elements.add(that.$container);
@@ -930,14 +921,14 @@
                 handler = $.proxy(that.fixPosition, that);
 
             that.$viewport
-            .on('resize' + eventNS + that.uniqueId, handler)
-            .on('scroll' + eventNS + that.uniqueId, handler);
+                .on('resize' + eventNS + that.uniqueId, handler)
+                .on('scroll' + eventNS + that.uniqueId, handler);
         },
 
         unbindWindowEvents: function () {
             this.$viewport
-            .off('resize' + eventNS + this.uniqueId)
-            .off('scroll' + eventNS + this.uniqueId);
+                .off('resize' + eventNS + this.uniqueId)
+                .off('scroll' + eventNS + this.uniqueId);
         },
 
         scrollToTop: function () {
@@ -969,16 +960,15 @@
                 that[option] = available[that.options[option]];
                 if (!that[option]) {
                     that.disable();
-                    throw '`' + option + '` option is incorrect! Must be one of: ' + $.map(available,
-                        function (value, name) {
-                            return '"' + name + '"';
-                        }).join(', ');
+                    throw '`' + option + '` option is incorrect! Must be one of: ' + $.map(available, function (value, name) {
+                        return '"' + name + '"';
+                    }).join(', ');
                 }
             });
 
             $(that.options.$helpers)
-            .off(eventNS)
-            .on('mousedown' + eventNS, $.proxy(that.onMousedown, that));
+                .off(eventNS)
+                .on('mousedown' + eventNS, $.proxy(that.onMousedown, that));
 
             if (that.isInitialized()) {
                 that.notify('setOptions');
@@ -1006,10 +996,8 @@
             elLayout.paddingRight = parseFloat(that.el.css('paddingRight'));
 
             $.extend(elLayout, that.el.offset());
-            elLayout.borderTop = that.el.css('border-top-style') == 'none' ? 0 : parseFloat(
-                that.el.css('border-top-width'));
-            elLayout.borderLeft = that.el.css('border-left-style') == 'none' ? 0 : parseFloat(
-                that.el.css('border-left-width'));
+            elLayout.borderTop = that.el.css('border-top-style') == 'none' ? 0 : parseFloat(that.el.css('border-top-width'));
+            elLayout.borderLeft = that.el.css('border-left-style') == 'none' ? 0 : parseFloat(that.el.css('border-left-width'));
             elLayout.innerHeight = that.el.innerHeight();
             elLayout.innerWidth = that.el.innerWidth();
             elLayout.outerHeight = that.el.outerHeight();
@@ -1105,10 +1093,10 @@
                 value = that.getSuggestionValue(suggestion) || '';
                 that.currentValue = value;
                 that.el.val(value);
-                that.el.trigger('suggestions-set');
                 that.selection = suggestion;
                 that.suggestions = [suggestion];
                 that.abortRequest();
+                that.el.trigger('suggestions-set');
             }
         },
 
@@ -1123,33 +1111,33 @@
                 resolver = $.Deferred();
 
             resolver
-            .done(function (suggestion) {
-                that.selectSuggestion(suggestion, 0, currentValue, {hasBeenEnriched: true});
-                that.el.trigger('suggestions-fixdata');
-            })
-            .fail(function () {
-                that.selection = null;
-                that.currentValue = '';
-                that.el.val(that.currentValue);
-                that.el.trigger('suggestions-fixdata');
-            });
+                .done(function (suggestion) {
+                    that.selectSuggestion(suggestion, 0, currentValue, {hasBeenEnriched: true});
+                    that.el.trigger('suggestions-fixdata', suggestion);
+                })
+                .fail(function () {
+                    that.selection = null;
+                    that.currentValue = '';
+                    that.el.val(that.currentValue);
+                    that.el.trigger('suggestions-fixdata');
+                });
 
             if (that.isQueryRequestable(fullQuery)) {
                 that.currentValue = fullQuery;
                 that.getSuggestions(fullQuery, {count: 1, from_bound: null, to_bound: null})
-                .done(function (suggestions) {
-                    // data fetched
-                    var suggestion = suggestions[0];
-                    if (suggestion) {
-                        resolver.resolve(suggestion);
-                    } else {
+                    .done(function (suggestions) {
+                        // data fetched
+                        var suggestion = suggestions[0];
+                        if (suggestion) {
+                            resolver.resolve(suggestion);
+                        } else {
+                            resolver.reject();
+                        }
+                    })
+                    .fail(function () {
+                        // no data fetched
                         resolver.reject();
-                    }
-                })
-                .fail(function () {
-                    // no data fetched
-                    resolver.reject();
-                });
+                    });
             } else {
                 resolver.reject();
             }
@@ -1259,9 +1247,9 @@
             var that = this;
 
             that.fetchPhase = that.getSuggestions(query)
-            .done(function (suggestions) {
-                that.assignSuggestions(suggestions, query);
-            });
+                .done(function (suggestions) {
+                    that.assignSuggestions(suggestions, query);
+                });
         },
 
         /**
@@ -1294,31 +1282,31 @@
                         resolver.reject();
                     } else {
                         that.doGetSuggestions(params)
-                        .done(function (response) {
-                            // if response is correct and current value has not been changed
-                            if (that.processResponse(response) && query == that.currentValue) {
+                            .done(function (response) {
+                                // if response is correct and current value has not been changed
+                                if (that.processResponse(response) && query == that.currentValue) {
 
-                                // Cache results if cache is not disabled:
-                                if (!options.noCache) {
-                                    if (useEnrichmentCache) {
-                                        that.enrichmentCache[query] = response.suggestions[0];
-                                    } else {
-                                        that.enrichResponse(response, query);
-                                        that.cachedResponse[cacheKey] = response;
-                                        if (options.preventBadQueries && response.suggestions.length === 0) {
-                                            that.badQueries.push(query);
+                                    // Cache results if cache is not disabled:
+                                    if (!options.noCache) {
+                                        if (useEnrichmentCache) {
+                                            that.enrichmentCache[query] = response.suggestions[0];
+                                        } else {
+                                            that.enrichResponse(response, query);
+                                            that.cachedResponse[cacheKey] = response;
+                                            if (options.preventBadQueries && response.suggestions.length === 0) {
+                                                that.badQueries.push(query);
+                                            }
                                         }
                                     }
-                                }
 
-                                resolver.resolve(response.suggestions);
-                            } else {
-                                resolver.reject();
-                            }
-                            if (!noCallbacks) {
-                                options.onSearchComplete.call(that.element, query, response.suggestions);
-                            }
-                        }).fail(function (jqXHR, textStatus, errorThrown) {
+                                    resolver.resolve(response.suggestions);
+                                } else {
+                                    resolver.reject();
+                                }
+                                if (!noCallbacks) {
+                                    options.onSearchComplete.call(that.element, query, response.suggestions);
+                                }
+                            }).fail(function (jqXHR, textStatus, errorThrown) {
                             resolver.reject();
                             if (!noCallbacks && textStatus !== 'abort') {
                                 options.onSearchError.call(that.element, query, jqXHR, textStatus, errorThrown);
@@ -1470,9 +1458,9 @@
             setupElement: function () {
                 // Remove autocomplete attribute to prevent native suggestions:
                 this.el
-                .attr('autocomplete', 'off')
-                .addClass('suggestions-input')
-                .css('box-sizing', 'border-box');
+                    .attr('autocomplete', 'off')
+                    .addClass('suggestions-input')
+                    .css('box-sizing', 'border-box');
             },
 
             bindElementEvents: function () {
@@ -1480,8 +1468,7 @@
 
                 that.el.on('keydown' + eventNS, $.proxy(that.onElementKeyDown, that));
                 // IE is buggy, it doesn't trigger `input` on text deletion, so use following events
-                that.el.on(['keyup' + eventNS, 'cut' + eventNS, 'paste' + eventNS, 'input' + eventNS].join(' '),
-                    $.proxy(that.onElementKeyUp, that));
+                that.el.on(['keyup' + eventNS, 'cut' + eventNS, 'paste' + eventNS, 'input' + eventNS].join(' '), $.proxy(that.onElementKeyUp, that));
                 that.el.on('blur' + eventNS, $.proxy(that.onElementBlur, that));
                 that.el.on('focus' + eventNS, $.proxy(that.onElementFocus, that));
             },
@@ -1503,10 +1490,10 @@
                 if (that.options.triggerSelectOnBlur) {
                     if (!that.isUnavailable()) {
                         that.selectCurrentValue({noSpace: true})
-                        .always(function () {
-                            // For NAMEs selecting keeps suggestions list visible, so hide it
-                            that.hide();
-                        });
+                            .always(function () {
+                                // For NAMEs selecting keeps suggestions list visible, so hide it
+                                that.hide();
+                            });
                     }
                 } else {
                     that.hide();
@@ -1573,12 +1560,12 @@
                         if (that.options.triggerSelectOnSpace && that.isCursorAtEnd()) {
                             e.preventDefault();
                             that.selectCurrentValue({continueSelecting: true, dontEnrich: true})
-                            .fail(function () {
-                                // If all data fetched but nothing selected
-                                that.currentValue += ' ';
-                                that.el.val(that.currentValue);
-                                that.proceedChangedValue();
-                            });
+                                .fail(function () {
+                                    // If all data fetched but nothing selected
+                                    that.currentValue += ' ';
+                                    that.el.val(that.currentValue);
+                                    that.proceedChangedValue();
+                                });
                         }
                         return;
                     case keys.UP:
@@ -1626,7 +1613,7 @@
                 that.abortRequest();
 
                 that.inputPhase = $.Deferred()
-                .done($.proxy(that.onValueChange, that));
+                    .done($.proxy(that.onValueChange, that));
 
                 if (that.options.deferRequestBy > 0) {
                     // Defer lookup in case when value changes very quickly:
@@ -1715,8 +1702,8 @@
         $.extend(Suggestions.prototype, methods);
 
         notificator
-        .on('initialize', methods.bindElementEvents)
-        .on('dispose', methods.unbindElementEvents);
+            .on('initialize', methods.bindElementEvents)
+            .on('dispose', methods.unbindElementEvents);
 
     }());
 
@@ -1751,16 +1738,16 @@
                 }
 
                 request
-                .done(function (status) {
-                    if (status.search) {
-                        $.extend(that.status, status);
-                    } else {
-                        triggerError('Service Unavailable');
-                    }
-                })
-                .fail(function () {
-                    triggerError(request.statusText);
-                });
+                    .done(function (status) {
+                        if (status.search) {
+                            $.extend(that.status, status);
+                        } else {
+                            triggerError('Service Unavailable');
+                        }
+                    })
+                    .fail(function () {
+                        triggerError(request.statusText);
+                    });
 
                 function triggerError(errorThrown) {
                     // If unauthorized
@@ -1777,7 +1764,7 @@
         $.extend(Suggestions.prototype, methods);
 
         notificator
-        .on('setOptions', methods.checkStatus);
+            .on('setOptions', methods.checkStatus);
 
     }());
 
@@ -1815,17 +1802,17 @@
                     }
 
                     locationRequest
-                    .done(function (resp) {
-                        var locationData = resp && resp.location && resp.location.data;
-                        if (locationData && locationData.kladr_id) {
-                            that.geoLocation.resolve(locationData);
-                        } else {
+                        .done(function (resp) {
+                            var locationData = resp && resp.location && resp.location.data;
+                            if (locationData && locationData.kladr_id) {
+                                that.geoLocation.resolve(locationData);
+                            } else {
+                                that.geoLocation.reject();
+                            }
+                        })
+                        .fail(function () {
                             that.geoLocation.reject();
-                        }
-                    })
-                    .fail(function () {
-                        that.geoLocation.reject();
-                    });
+                        });
                 }
             },
 
@@ -1841,8 +1828,7 @@
                 var that = this,
                     params = {};
 
-                if (that.geoLocation && $.isFunction(
-                        that.geoLocation.promise) && that.geoLocation.state() == 'resolved') {
+                if (that.geoLocation && $.isFunction(that.geoLocation.promise) && that.geoLocation.state() == 'resolved') {
                     that.geoLocation.done(function (locationData) {
                         params['locations_boost'] = $.makeArray(locationData);
                     });
@@ -1866,8 +1852,8 @@
         });
 
         notificator
-        .on('setOptions', methods.checkLocation)
-        .on('requestParams', methods.constructParams);
+            .on('setOptions', methods.checkLocation)
+            .on('requestParams', methods.constructParams);
 
     }());
 
@@ -1909,17 +1895,17 @@
                         useEnrichmentCache: true
                     }
                 )
-                .always(function () {
-                    that.enableDropdown();
-                })
-                .done(function (suggestions) {
-                    var enrichedSuggestion = suggestions && suggestions[0];
+                    .always(function () {
+                        that.enableDropdown();
+                    })
+                    .done(function (suggestions) {
+                        var enrichedSuggestion = suggestions && suggestions[0];
 
-                    resolver.resolve(enrichedSuggestion || suggestion, !!enrichedSuggestion);
-                })
-                .fail(function () {
-                    resolver.resolve(suggestion);
-                });
+                        resolver.resolve(enrichedSuggestion || suggestion, !!enrichedSuggestion);
+                    })
+                    .fail(function () {
+                        resolver.resolve(suggestion);
+                    });
 
                 return resolver;
             },
@@ -2002,11 +1988,11 @@
                     suggestionSelector = '.' + that.classes.suggestion,
                     options = that.options,
                     $container = $('<div/>')
-                    .addClass(options.containerClass)
-                    .css({
-                        position: 'absolute',
-                        display: 'none'
-                    });
+                        .addClass(options.containerClass)
+                        .css({
+                            position: 'absolute',
+                            display: 'none'
+                        });
 
                 that.$container = $container;
 
@@ -2090,8 +2076,8 @@
                 }
 
                 that.$container
-                .toggleClass(that.classes.mobile, that.isMobile)
-                .css(style);
+                    .toggleClass(that.classes.mobile, that.isMobile)
+                    .css(style);
 
                 that.containerItemsPadding = elLayout.left + elLayout.borderLeft + elLayout.paddingLeft - scrollLeft;
             },
@@ -2168,8 +2154,7 @@
                         unformattableTokens: that.type.unformattableTokens
                     }));
                     if (labels) {
-                        html.push(
-                            '<span class="' + that.classes.subtext_label + '">' + utils.escapeHtml(labels) + '</span>');
+                        html.push('<span class="' + that.classes.subtext_label + '">' + utils.escapeHtml(labels) + '</span>');
                     }
                     html.push('</div>');
                 });
@@ -2261,8 +2246,7 @@
                 // use simple loop because length can change
                 for (i = 0; i < chunks.length; i++) {
                     chunk = chunks[i];
-                    if (chunk.matchable && !chunk.matched && ($.inArray(chunk.formatted,
-                            unformattableTokens) === -1 || chunk.inUpperCase)) {
+                    if (chunk.matchable && !chunk.matched && ($.inArray(chunk.formatted, unformattableTokens) === -1 || chunk.inUpperCase)) {
                         $.each(tokenMatchers, function (j, matcher) {
                             var tokenMatch = matcher.exec(chunk.formatted),
                                 length, nextIndex = i + 1;
@@ -2375,8 +2359,8 @@
                 that.visible = false;
                 that.selectedIndex = -1;
                 that.$container
-                .hide()
-                .empty();
+                    .hide()
+                    .empty();
             },
 
             activate: function (index) {
@@ -2482,12 +2466,12 @@
         $.extend(Suggestions.prototype, methods);
 
         notificator
-        .on('initialize', methods.createContainer)
-        .on('dispose', methods.removeContainer)
-        .on('setOptions', methods.setContainerOptions)
-        .on('fixPosition', methods.setDropdownPosition)
-        .on('fixPosition', methods.setItemsPositions)
-        .on('assignSuggestions', methods.suggest);
+            .on('initialize', methods.createContainer)
+            .on('dispose', methods.removeContainer)
+            .on('setOptions', methods.setContainerOptions)
+            .on('fixPosition', methods.setDropdownPosition)
+            .on('fixPosition', methods.setItemsPositions)
+            .on('assignSuggestions', methods.suggest);
 
     }());
 
@@ -2579,19 +2563,19 @@
 
                 if (immediate) {
                     that.$el
-                    .show()
-                    .css(style);
+                        .show()
+                        .css(style);
                     that.showBackground(true);
                 } else {
                     that.$el
-                    .stop(true, true)
-                    .delay(BEFORE_SHOW_ADDON)
-                    .queue(function () {
-                        that.$el.show();
-                        that.showBackground();
-                        that.$el.dequeue();
-                    })
-                    .animate(style, 'fast');
+                        .stop(true, true)
+                        .delay(BEFORE_SHOW_ADDON)
+                        .queue(function () {
+                            that.$el.show();
+                            that.showBackground();
+                            that.$el.dequeue();
+                        })
+                        .animate(style, 'fast');
                 }
             },
 
@@ -2601,18 +2585,18 @@
 
                 if (immediate) {
                     that.$el
-                    .hide()
-                    .css(style);
+                        .hide()
+                        .css(style);
                 }
                 that.$el
-                .stop(true)
-                .animate(style, {
-                    duration: 'fast',
-                    complete: function () {
-                        that.$el.hide();
-                        that.hideBackground();
-                    }
-                });
+                    .stop(true)
+                    .animate(style, {
+                        duration: 'fast',
+                        complete: function () {
+                            that.$el.hide();
+                            that.hideBackground();
+                        }
+                    });
             },
 
             fixPosition: function (origin, elLayout) {
@@ -2645,8 +2629,8 @@
                         $el.css(style);
                     } else {
                         $el
-                        .animate(style, {duration: 'fast', queue: QUEUE_NAME})
-                        .dequeue(QUEUE_NAME);
+                            .animate(style, {duration: 'fast', queue: QUEUE_NAME})
+                            .dequeue(QUEUE_NAME);
                     }
                 }
             },
@@ -2662,9 +2646,9 @@
                         $el.css(style);
                     } else {
                         $el
-                        .delay(BEFORE_RESTORE_PADDING, QUEUE_NAME)
-                        .animate(style, {duration: 'fast', queue: QUEUE_NAME})
-                        .dequeue(QUEUE_NAME);
+                            .delay(BEFORE_RESTORE_PADDING, QUEUE_NAME)
+                            .animate(style, {duration: 'fast', queue: QUEUE_NAME})
+                            .dequeue(QUEUE_NAME);
                     }
                 }
             },
@@ -2714,13 +2698,13 @@
         $.extend(defaultOptions, optionsUsed);
 
         notificator
-        .on('initialize', methods.createAddon)
-        .on('setOptions', methods.checkAddonType)
-        .on('fixPosition', methods.fixAddonPosition)
-        .on('clear', methods.checkAddonVisibility)
-        .on('valueChange', methods.checkAddonVisibility)
-        .on('request', methods.checkAddonVisibility)
-        .on('resetPosition', methods.stopBackground);
+            .on('initialize', methods.createAddon)
+            .on('setOptions', methods.checkAddonType)
+            .on('fixPosition', methods.fixAddonPosition)
+            .on('clear', methods.checkAddonVisibility)
+            .on('valueChange', methods.checkAddonVisibility)
+            .on('request', methods.checkAddonVisibility)
+            .on('resetPosition', methods.stopBackground);
 
     }());
 
@@ -2777,8 +2761,7 @@
 
                 that.$constraints = $('<ul class="suggestions-constraints"/>');
                 that.$wrapper.append(that.$constraints);
-                that.$constraints.on('click', '.' + that.classes.removeConstraint,
-                    $.proxy(that.onConstraintRemoveClick, that));
+                that.$constraints.on('click', '.' + that.classes.removeConstraint, $.proxy(that.onConstraintRemoveClick, that));
             },
 
             setConstraintsPosition: function (origin, elLayout) {
@@ -2786,8 +2769,7 @@
 
                 that.$constraints.css({
                     left: origin.left + elLayout.borderLeft + elLayout.paddingLeft + 'px',
-                    top: origin.top + elLayout.borderTop + Math.round(
-                        (elLayout.innerHeight - that.$constraints.height()) / 2) + 'px'
+                    top: origin.top + elLayout.borderTop + Math.round((elLayout.innerHeight - that.$constraints.height()) / 2) + 'px'
                 });
 
                 elLayout.componentsLeft += that.$constraints.outerWidth(true) + elLayout.paddingLeft;
@@ -2884,8 +2866,8 @@
 
                 if (constraint.label) {
                     $item = $('<li/>')
-                    .append($('<span/>').text(constraint.label))
-                    .attr('data-constraint-id', id);
+                        .append($('<span/>').text(constraint.label))
+                        .attr('data-constraint-id', id);
                     if (constraint.deletable) {
                         $item.append($('<span class="suggestions-remove"/>'));
                     }
@@ -2913,8 +2895,7 @@
                     parentData,
                     params = {};
 
-                while (constraints instanceof $ && (parentInstance = constraints.suggestions()) && !(parentData = utils.getDeepValue(
-                    parentInstance, 'selection.data'))
+                while (constraints instanceof $ && (parentInstance = constraints.suggestions()) && !(parentData = utils.getDeepValue(parentInstance, 'selection.data'))
                     ) {
                     constraints = parentInstance.constraints;
                 }
@@ -2955,14 +2936,14 @@
                 var that = this;
 
                 that.constraints
-                .on([
-                        'suggestions-select.' + that.uniqueId,
-                        'suggestions-invalidateselection.' + that.uniqueId,
-                        'suggestions-clear.' + that.uniqueId
-                    ].join(' '),
-                    $.proxy(that.onParentSelectionChanged, that)
-                )
-                .on('suggestions-dispose.' + that.uniqueId, $.proxy(that.onParentDispose, that));
+                    .on([
+                            'suggestions-select.' + that.uniqueId,
+                            'suggestions-invalidateselection.' + that.uniqueId,
+                            'suggestions-clear.' + that.uniqueId
+                        ].join(' '),
+                        $.proxy(that.onParentSelectionChanged, that)
+                    )
+                    .on('suggestions-dispose.' + that.uniqueId, $.proxy(that.onParentDispose, that));
             },
 
             unbindFromParent: function () {
@@ -3013,11 +2994,11 @@
         }
 
         notificator
-        .on('initialize', methods.createConstraints)
-        .on('setOptions', methods.setupConstraints)
-        .on('fixPosition', methods.setConstraintsPosition)
-        .on('requestParams', methods.constructConstraintsParams)
-        .on('dispose', methods.unbindFromParent);
+            .on('initialize', methods.createConstraints)
+            .on('setOptions', methods.setupConstraints)
+            .on('fixPosition', methods.setConstraintsPosition)
+            .on('requestParams', methods.constructConstraintsParams)
+            .on('dispose', methods.unbindFromParent);
 
     }());
 
@@ -3051,27 +3032,27 @@
                 that.inputPhase.resolve();
 
                 that.fetchPhase
-                .done(function () {
-                    var index;
+                    .done(function () {
+                        var index;
 
-                    // When suggestion has already been selected and not modified
-                    if (that.selection && !that.visible) {
-                        result.reject();
-                    } else {
-                        index = that.findSuggestionIndex();
-
-                        that.select(index, selectionOptions);
-
-                        if (index === -1) {
+                        // When suggestion has already been selected and not modified
+                        if (that.selection && !that.visible) {
                             result.reject();
                         } else {
-                            result.resolve(index);
+                            index = that.findSuggestionIndex();
+
+                            that.select(index, selectionOptions);
+
+                            if (index === -1) {
+                                result.reject();
+                            } else {
+                                result.resolve(index);
+                            }
                         }
-                    }
-                })
-                .fail(function () {
-                    result.reject();
-                });
+                    })
+                    .fail(function () {
+                        result.reject();
+                    });
 
                 return result;
             },
@@ -3137,11 +3118,11 @@
                 }
 
                 that.enrichSuggestion(suggestion, selectionOptions)
-                .done(function (enrichedSuggestion, hasBeenEnriched) {
-                    that.selectSuggestion(enrichedSuggestion, index, currentValue, $.extend({
-                        hasBeenEnriched: hasBeenEnriched
-                    }, selectionOptions));
-                });
+                    .done(function (enrichedSuggestion, hasBeenEnriched) {
+                        that.selectSuggestion(enrichedSuggestion, index, currentValue, $.extend({
+                            hasBeenEnriched: hasBeenEnriched
+                        }, selectionOptions));
+                    });
 
             },
 
@@ -3238,7 +3219,7 @@
         $.extend(Suggestions.prototype, methods);
 
         notificator
-        .on('assignSuggestions', methods.selectFoundSuggestion);
+            .on('assignSuggestions', methods.selectFoundSuggestion);
 
     }());
 
@@ -3377,9 +3358,9 @@
         $.extend($.Suggestions.prototype, methods);
 
         notificator
-        .on('initialize', methods.setupBounds)
-        .on('setOptions', methods.setBoundsOptions)
-        .on('requestParams', methods.constructBoundsParams);
+            .on('initialize', methods.setupBounds)
+            .on('setOptions', methods.setBoundsOptions)
+            .on('requestParams', methods.constructBoundsParams);
 
     })();
 
