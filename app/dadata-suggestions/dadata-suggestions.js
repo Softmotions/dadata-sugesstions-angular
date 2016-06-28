@@ -63,11 +63,17 @@ angular.module('dadataSuggestions', [])
             }],
             link: function (scope) {
                 $timeout(function () {
-                    // auto-enable fixData on non-granular suggestions
+                    var isEmpty = true;
                     var inputsLength = 0;
-                    angular.forEach(scope.inputs, function () {
+                    angular.forEach(scope.inputs, function (input) {
+                        if (input.ngModel) {
+                            isEmpty = false;
+                        }
+                        input.prevValue = input.ngModel;
                         inputsLength++;
                     });
+
+                    // auto-enable fixData on non-granular suggestions
                     if (inputsLength == 1) {
                         angular.forEach(scope.inputs, function (input) {
                             input.fixdata = true;
@@ -75,13 +81,6 @@ angular.module('dadataSuggestions', [])
                     }
 
                     // check for empty form
-                    var isEmpty = true;
-                    angular.forEach(scope.inputs, function (input) {
-                        if (input.ngModel) {
-                            isEmpty = false;
-                        }
-                        input.prevValue = input.ngModel;
-                    });
                     angular.forEach(scope.inputs, function (input) {
                         if (isEmpty) { // form is empty - disable fixData
                             input.fixdata = false;
