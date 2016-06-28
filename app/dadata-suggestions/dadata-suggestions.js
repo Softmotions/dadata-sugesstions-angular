@@ -39,7 +39,7 @@ angular.module('dadataSuggestions', [])
         token: false,
         timeout: 3000
     })
-    .directive('dadata', ['$timeout', function ($timeout) {
+    .directive('dadata', ['$timeout', '$interval', function ($timeout, $interval) {
         return {
             restrict: 'A',
             scope: {
@@ -85,7 +85,13 @@ angular.module('dadataSuggestions', [])
                         if (isEmpty) { // form is empty - disable fixData
                             input.fixdata = false;
                         } else { // form is not empty - disable suggestions util user try to modify values
-                            $("#" + input.id).suggestions().disable();
+                            var inputSelector = $("#" + input.id);
+                            var timer = $interval(function () {
+                                if (inputSelector.suggestions().isInitialized()) {
+                                    inputSelector.suggestions().disable();
+                                    $interval.cancel(timer);
+                                }
+                            }, 100);
                         }
                     });
                 });
