@@ -9,7 +9,11 @@ Features:
 * Support granular suggestions
 * Enables suggestions after the first edit
 
-**Warning!** Module uses extended version of suggestions-jquery - see [diff](https://github.com/hflabs/suggestions-jquery/pull/5/files#diff-07677040de035c6566b94f5e4089fd27) 
+Require:
+
+* [suggestions-jquery](http://www.jsdelivr.com/projects/jquery.suggestions) 16.5.4+
+* angular ~1.5.0
+* jquery 2.2.x
 
 ## How to run
 JS:
