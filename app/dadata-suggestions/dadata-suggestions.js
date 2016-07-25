@@ -149,7 +149,7 @@ angular.module('dadataSuggestions', [])
                         });
                     });
 
-                    iElement.bind('keyup paste', function (event) { // user try to modify values - we can check values in DaData
+                    var modifyHandler = function (event) { // user try to modify values - we can check values in DaData
                         function runFixData() {
                             angular.forEach(parentCtrl.inputs, function (input) {
                                 if (input.fixdata) {
@@ -159,8 +159,25 @@ angular.module('dadataSuggestions', [])
                             });
                         }
 
+                        function cleanInput (id) {
+                            angular.forEach(parentCtrl.inputs, function (input) {
+                                if (input.constraintInputId == id) {
+                                    $('#' + input.id).val("");
+                                    cleanInput(input.id);
+                                }
+                            });
+                        }
+
                         var ngModelToCheck = event.target.attributes['ng-model'].value;
                         var input = parentCtrl.inputs[ngModelToCheck];
+
+                        if (!input.fixdata) {
+                            // must clean all inputs with constraintInputId == input.id before run fixData
+                            cleanInput(input.id);
+                            angular.forEach(parentCtrl.inputs, function (input) {
+                                $("#" + input.id).unbind('keyup paste', modifyHandler);  // don't need anymore
+                            });
+                        }
 
                         if (event.type == 'paste') { // run fixData after paste complete
                             $timeout(function () {
@@ -173,7 +190,9 @@ angular.module('dadataSuggestions', [])
                                 runFixData();
                             }
                         }
-                    });
+                    };
+
+                    iElement.bind('keyup paste', modifyHandler);
                 }
             }
         };
