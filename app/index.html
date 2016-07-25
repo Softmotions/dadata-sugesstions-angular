@@ -14,7 +14,7 @@
 </head>
 <body ng-app="myApp" ng-controller="myAppController">
 <div>Гранулярные подсказки</div>
-<form dadata dadata-type="address">
+<form dadata dadata-type="address" dadata-auto-select-first="true">
     <label for="city" class="required">Город</label>
     <input id="city" class="form-control input-lg" ng-model="city" dadata-input dadata-bounds="city">
     <label for="street" class="required">Улица</label>
@@ -26,7 +26,7 @@
 </form>
 <p>
 <div>Адрес целиком</div>
-<form dadata dadata-type="address">
+<form dadata dadata-type="address" dadata-auto-select-first="true">
     <label for="address" class="required">Адрес</label>
     <input id="address" class="form-control input-lg" ng-model="address" dadata-input>
 </form>

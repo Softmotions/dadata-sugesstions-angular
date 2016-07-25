@@ -9,7 +9,7 @@
  *  Директива для проверки данных через сервис DaData.ru. Подсказки включаются при первой попытке изменить содержимое
  *  полей (иначе можно запортить значения, а пользователь их не заметит).
  *  Требует dadataConfig.token = "<API-KEY>"
- *  Usage: <form dadata dadata-type="address" [dadata-trigger-select-on-blur="true"]
+ *  Usage: <form dadata dadata-type="address" [dadata-auto-select-first="false"] [dadata-trigger-select-on-blur="true"]
  *          [dadata-trigger-select-on-enter="true"] [dadata-trigger-select-on-space="false"]>
  *             <input id="region" ng-model="region" dadata-input dadata-bounds="region">
  *             <input id="city" ng-model="city" dadata-input dadata-bounds="city" dadata-constraint-input-id="region" dadata-fixdata="true">
@@ -19,6 +19,7 @@
  *      dadata: type - тип подсказок, см. https://confluence.hflabs.ru/display/SGTDOC165/API
  *      dadata-input: id, ng-model
  *  Настройки:
+ *      auto-select-first - включает автовыбор первой подсказки по событиям. По-умолчанию выключено.
  *      trigger-select-on-[blur|enter|space] - автовыбор первой подсказки по событию.
  *          в примере указаны значения по-умолчанию.
  *      bounds - гранулярные подсказки http://codepen.io/dadata/pen/cGkah?editors=101
@@ -44,6 +45,7 @@ angular.module('dadataSuggestions', [])
             restrict: 'A',
             scope: {
                 type: '@dadataType',
+                autoSelectFirst: '@dadataAutoSelectFirst',
                 triggerSelectOnBlur: '@dadataTriggerSelectOnBlur',
                 triggerSelectOnEnter: '@dadataTriggerSelectOnEnter',
                 triggerSelectOnSpace: '@dadataTriggerSelectOnSpace'
@@ -57,6 +59,7 @@ angular.module('dadataSuggestions', [])
                 this.type = $scope.type;
 
                 // set default values
+                this.autoSelectFirst = $scope.autoSelectFirst || false;
                 this.triggerSelectOnBlur = $scope.triggerSelectOnBlur || true;
                 this.triggerSelectOnEnter = $scope.triggerSelectOnEnter || true;
                 this.triggerSelectOnSpace = $scope.triggerSelectOnSpace || false;
@@ -119,6 +122,7 @@ angular.module('dadataSuggestions', [])
                         token: dadataConfig.token,
                         type: parentCtrl.type.toUpperCase(),
                         timeout: dadataConfig.timeout,
+                        autoSelectFirst: parentCtrl.autoSelectFirst,
                         triggerSelectOnBlur: parentCtrl.triggerSelectOnBlur,
                         triggerSelectOnEnter: parentCtrl.triggerSelectOnEnter,
                         triggerSelectOnSpace: parentCtrl.triggerSelectOnSpace,
