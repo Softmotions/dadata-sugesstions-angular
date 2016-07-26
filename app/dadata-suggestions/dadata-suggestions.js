@@ -1,7 +1,7 @@
 /*!
  * dadata-suggestions-angular
  * https://github.com/Softmotions/dadata-suggestions-angular
- * Version: 0.0.1 - 2016-06-27T12:20:00.000Z
+ * Version: 0.0.2 - 2016-07-26T12:00:00.000Z
  * License: MIT
  */
 
@@ -138,6 +138,7 @@ angular.module('dadataSuggestions', [])
 
                     iElement.bind('suggestions-clear suggestions-select suggestions-set', function (event) { // update model after jquery
                         var ngModelToSet = event.target.attributes['ng-model'].value;
+                        parentCtrl.inputs[ngModelToSet].prevValue = event.target.value;
                         parentCtrl.inputs[ngModelToSet].ngModel = event.target.value;
                     });
 
@@ -149,16 +150,24 @@ angular.module('dadataSuggestions', [])
                         });
                     });
 
-                    var modifyHandler = function (event) { // user try to modify values - we can check values in DaData
-                        function runFixData() {
-                            angular.forEach(parentCtrl.inputs, function (input) {
-                                if (input.fixdata) {
-                                    $('#' + input.id).suggestions().fixData(); // run fixData on first try
-                                    input.fixdata = false;
-                                }
-                            });
-                        }
+                    var defaultModifyHandler = function (event) { // only keep model up-to-date
+                        var ngModelToSet = event.target.attributes['ng-model'].value;
+                        var input = parentCtrl.inputs[ngModelToSet];
 
+                        function updateModel() {
+                            if (input.prevValue != input.ngModel) {
+                                input.prevValue = input.ngModel;
+                                input.ngModel = event.target.value;
+                            }
+                        }
+                        if (event.type == 'paste') {
+                            $timeout(updateModel());
+                        } else {
+                            updateModel();
+                        }
+                    };
+
+                    var modifyHandlerBeforeFixData = function (event) { // user try to modify values - we can check values in DaData
                         function cleanInput (id) {
                             angular.forEach(parentCtrl.inputs, function (input) {
                                 if (input.constraintInputId == id) {
@@ -171,28 +180,32 @@ angular.module('dadataSuggestions', [])
                         var ngModelToCheck = event.target.attributes['ng-model'].value;
                         var input = parentCtrl.inputs[ngModelToCheck];
 
-                        if (!input.fixdata) {
-                            // must clean all inputs with constraintInputId == input.id before run fixData
-                            cleanInput(input.id);
-                            angular.forEach(parentCtrl.inputs, function (input) {
-                                $("#" + input.id).unbind('keyup paste', modifyHandler);  // don't need anymore
-                            });
+                        function updateModelNRunFixData() {
+                            if (input.prevValue != input.ngModel) { // run fixData on input value change
+                                input.prevValue = input.ngModel;
+                                if (!input.fixdata) {
+                                    cleanInput(input.id); // must clean all granular fields with constraintInputId == input.id
+                                }
+                                angular.forEach(parentCtrl.inputs, function (input) {
+                                    var inputSelector = $("#" + input.id);
+                                    if (input.fixdata) {
+                                        inputSelector.suggestions().fixData(); // run fixData on first try
+                                        input.fixdata = false;
+                                    }
+                                    inputSelector.unbind('keyup paste', modifyHandlerBeforeFixData); // don't need anymore
+                                    inputSelector.bind('keyup paste', defaultModifyHandler); // replace with default modify handler
+                                });
+                            }
                         }
 
                         if (event.type == 'paste') { // run fixData after paste complete
-                            $timeout(function () {
-                                input.prevValue = input.ngModel;
-                                runFixData();
-                            });
+                            $timeout(updateModelNRunFixData());
                         } else {
-                            if (input.prevValue != input.ngModel) { // run fixData on input value change
-                                input.prevValue = input.ngModel;
-                                runFixData();
-                            }
+                            updateModelNRunFixData();
                         }
                     };
 
-                    iElement.bind('keyup paste', modifyHandler);
+                    iElement.bind('keyup paste', modifyHandlerBeforeFixData);
                 }
             }
         };
